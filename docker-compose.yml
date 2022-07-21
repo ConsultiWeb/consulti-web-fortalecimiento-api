@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  api-consulti:
+    image: 'erickespinozat/api-consulti:latest'
+    container_name: api-consulti
+    hostname: 'api-consulti'
+    restart: always
+    ports:
+      - '5000:5000'
+    volumes:
+      - ./src/main/resources/application.properties:/usr/app/application.properties
+      #- /log4j2.xml:/log4j2.xml
