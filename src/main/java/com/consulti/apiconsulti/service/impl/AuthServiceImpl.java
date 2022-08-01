@@ -97,7 +97,7 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
     try {
       User user = userRepository.findByEmail(email);
       if (user == null) {
-        throw new GenericException("Usuario no encontrado ");
+        throw new GenericException("Usuario no encontrado");
       }
       final UserDetails userDetails = loadUserByUsername(user.getUsername());
       final String token = jwtTokenUtil.generateToken(userDetails);
