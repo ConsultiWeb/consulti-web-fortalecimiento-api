@@ -3,11 +3,14 @@ package com.consulti.apiconsulti.service.impl;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.*;
+
 import javax.servlet.http.HttpServletRequest;
 import com.consulti.apiconsulti.config.exception.GenericException;
+import com.consulti.apiconsulti.entity.Actividad;
 import com.consulti.apiconsulti.entity.ResetToken;
 import com.consulti.apiconsulti.entity.User;
 import com.consulti.apiconsulti.model.*;
+import com.consulti.apiconsulti.repository.ActividadRepository;
 import com.consulti.apiconsulti.repository.ResetTokenRespository;
 import com.consulti.apiconsulti.repository.UserRepository;
 import com.consulti.apiconsulti.security.JwtTokenUtil;
@@ -16,6 +19,7 @@ import com.consulti.apiconsulti.service.MailService;
 import com.consulti.apiconsulti.service.UserService;
 import com.consulti.apiconsulti.utils.GeneralUtils;
 import com.consulti.apiconsulti.utils.constants.SecurityConstants;
+import com.consulti.apiconsulti.utils.enums.StatusHandlerEnum;
 import com.consulti.apiconsulti.utils.validations.AuthValidations;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
@@ -34,6 +38,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -53,6 +58,9 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
 
   @Autowired
   ResetTokenRespository resetTokenRespository;
+
+  @Autowired
+  ActividadRepository actividadRepository;
 
   @Autowired
   private AuthValidations authValidations;
@@ -87,6 +95,15 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
       final UserDetails userDetails = loadUserByUsername(request.getUsername());
       final String token = jwtTokenUtil.generateToken(userDetails);
       response = new JwtResponse(token,userDetails.getUsername());
+      Actividad actividad=new Actividad();
+      actividad.setDescripcion("Se inicio sesion exitosamente");
+      actividad.setModulo("Modulo de seguridad");
+      actividad.setIp("192.168.0.1");
+      actividad.setEquipo("Windows 10");
+      actividad.setEstado(StatusHandlerEnum.ACTIVO.getValue());
+      actividad.setFeCreacion(new Date());
+      actividad.setUsrCreacion(request.getUsername());
+      actividadRepository.saveAndFlush(actividad);
     } catch (GenericException e) {
       throw new GenericException(e.getMessageError(), e.getCodeError());
     }
