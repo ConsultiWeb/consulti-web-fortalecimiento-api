@@ -1,9 +1,12 @@
 package com.consulti.apiconsulti.utils.validations;
 
 import java.util.Optional;
+//import java.util.ArrayList;
 
 import com.consulti.apiconsulti.config.exception.GenericException;
+import com.consulti.apiconsulti.entity.ProcesoReclutamiento;
 import com.consulti.apiconsulti.entity.User;
+import com.consulti.apiconsulti.repository.ProcesoReclutamientoRepository;
 import com.consulti.apiconsulti.repository.UserRepository;
 import com.consulti.apiconsulti.utils.GeneralUtils;
 import com.consulti.apiconsulti.utils.constants.CoreUtilConstants;
@@ -19,6 +22,9 @@ public class UserValidations {
   UserRepository userRepository;
 
   @Autowired
+  ProcesoReclutamientoRepository procesoReclutamientoRepository;
+
+  @Autowired
   BCryptPasswordEncoder bCryptPasswordEncoder;
 
   public void validarUsuarioVacio(User request) throws GenericException {
@@ -30,6 +36,14 @@ public class UserValidations {
   }
 
   public void validarGuardar(User request) throws GenericException {
+    if (procesoReclutamientoRepository.countByEstado("Activo")==0){
+      throw new GenericException("No hay un proceso de reclutamiento activo", CoreUtilConstants.MISSING_VALUES);
+    }
+//    ArrayList<ProcesoReclutamiento> lista=procesoReclutamientoRepository.findAll();
+//    for (int i=0; i<=lista.length; i++){
+//        if (lista[i].feFin<)
+//    }
+//    if (procesoReclutamientoRepository.findAll())
     if (request.getIdentificacion() == null|| request.getIdentificacion().length() == 0) {
       throw new GenericException("El valor identificacion es requerido", CoreUtilConstants.MISSING_VALUES);
     }
